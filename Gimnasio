@@ -1,0 +1,116 @@
+#include <stdio.h>
+#include <string.h>
+#define NUM_CLASES 4
+#define HORAS 5
+int i, j;
+char clases[NUM_CLASES][20] = {"top ride","zumba","entrenamiento","abdominales"};
+int cupo[NUM_CLASES];
+int total_asistentes = 0;
+void pedir_cupo(){ //pide el cupo de cada clase
+       for (i=0; i<4; i++) 
+       {
+            printf("\n Ingrese el cupo de las clases de %s: ",clases[i] );
+            scanf ("%d", &cupo[i]);
+        }
+}
+
+int main() {
+
+    int asistencia[NUM_CLASES][HORAS] = {0};
+    int costo_horario[HORAS] = {560, 560, 700, 805, 805}; // Costo por horario
+    
+    int alumnos_ingresados=0;
+    pedir_cupo();
+    while (1) {
+        char clase[20];
+        int horario;
+
+        printf("\nIngrese el nombre de la clase (o 'salir' para finalizar): ");
+        scanf("%s", clase);
+
+        if (strcmp(clase, "salir") == 0) { //si quiere salir finaliza la carga
+            printf("carga finalizada\n");
+            break;
+        }
+
+        printf("Ingrese el horario (1-5): "); //pregunta el horario
+        scanf("%d", &horario);
+
+        //se fija si la clase existe 
+        int clase_encontrada = -1;
+        for (i = 0; i < NUM_CLASES; i++) {
+            if (strcmp(clase, clases[i]) == 0) {
+                clase_encontrada = i;
+                break;
+            }
+        }
+
+        if (clase_encontrada == -1) { //si la clase no existe pide otra
+            printf("esa clase no esta disponible.\n");
+            continue;
+        }
+
+        if (asistencia[clase_encontrada][horario - 1] >= cupo[clase_encontrada]) { //se fija si hay espacio
+            printf("La clase de %s está completa. \n", clases[clase_encontrada]);
+        } else {
+            asistencia[clase_encontrada][horario - 1]++; //suma un presente
+            alumnos_ingresados++;
+            printf("listo, usted fue registrado \n");
+        }
+    }
+
+    //cuenta y muestra las clases a las que no asistio nadie
+    
+    total_asistentes=0;
+    int clases_sin_alumnos = 0;
+    printf("Clases sin alumnos:\n");
+    for (i = 0; i < NUM_CLASES; i++) 
+    {
+        
+        for (j = 0; j < HORAS; j++) 
+        {
+            total_asistentes += asistencia[i][j];
+        }
+        
+        
+        if (total_asistentes == 0) 
+        {
+            printf("%s\n", clases[i]);
+            clases_sin_alumnos++;
+        }
+    }
+    if (clases_sin_alumnos == 0) { //si se hicieron todas las clases
+        printf("Todas las clases tuvieron alumnos.\n");
+    }
+
+    //cuenta y muestra los presentes de cada clase
+    total_asistentes = 0;
+    printf("\n presentes por clase::\n");
+    for (i = 0; i < NUM_CLASES; i++) 
+    {
+    
+        for (j = 0; j < HORAS; j++) 
+        {
+            total_asistentes += asistencia[i][j];
+        }
+    printf("- %s: %d\n", clases[i], total_asistentes);
+    }
+
+int ganancia_dia=0;
+    //mostrar la ganancia del dia
+    printf("\n Ganancia obtenida en el día:\n");
+    for (i = 0; i < NUM_CLASES; i++) 
+    {
+        for (j = 0; j < HORAS; j++) 
+        {
+        ganancia_dia+=asistencia[i][j] * costo_horario[j]; //el costo del horario ya tiene los descuentos o recargos (horario central es el 3)
+        }
+    }
+    printf(" $ %d\n", ganancia_dia);
+
+    return 0;
+}
+
+
+
+
